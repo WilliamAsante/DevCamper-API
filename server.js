@@ -19,6 +19,7 @@ const app = express();
 // To run the server we call .listen
 // We need to pass a port so we use the one from the the env file
 const PORT = process.env.PORT || 3000;
+
 app.listen(
   PORT,
   console.log(
