@@ -40,65 +40,6 @@ app.get("/", (req, res) => {
   res.status(400).json({ success: false });
 });
 
-/**
- * BOOTCAMP API ROUTES
- * These routes handle CRUD operations for bootcamps
- * CRUD = Create, Read, Update, Delete
- */
-
-// GET ALL BOOTCAMPS
-// URL: GET /api/v1/bootcamps
-// Purpose: Retrieve a list of all bootcamps
-app.get("/api/v1/bootcamps", (req, res) => {
-  // 200 = OK status code (request successful)
-  res.status(200).json({ 
-    success: true, 
-    message: 'Show all bootcamps' 
-  });
-});
-
-// GET SINGLE BOOTCAMP BY ID
-// URL: GET /api/v1/bootcamps/123 (where 123 is the ID)
-// :id is a route parameter - it can be any value
-app.get("/api/v1/bootcamps/:id", (req, res) => {
-  // req.params.id contains the ID from the URL
-  // Note: Missing template literal backticks in original message
-  res.status(200).json({ 
-    success: true, 
-    message: `Show bootcamp ${req.params.id}` 
-  });
-});
-
-// CREATE NEW BOOTCAMP
-// URL: POST /api/v1/bootcamps
-// Purpose: Add a new bootcamp to the database
-app.post("/api/v1/bootcamps", (req, res) => {
-  // In a real app, we'd get bootcamp data from req.body
-  res.status(200).json({ 
-    success: true, 
-    message: 'Create new bootcamp' 
-  });
-});
-
-// UPDATE EXISTING BOOTCAMP
-// URL: PUT /api/v1/bootcamps/123 (where 123 is the ID to update)
-// PUT is used for updating entire resources
-app.put("/api/v1/bootcamps/:id", (req, res) => {
-  // Template literal (backticks) allows us to insert variables into strings
-  res.status(200).json({ 
-    success: true, 
-    message: `Update bootcamp ${req.params.id}` 
-  });
-});
-
-// DELETE BOOTCAMP
-// URL: DELETE /api/v1/bootcamps/123 (where 123 is the ID to delete)
-app.delete("/api/v1/bootcamps/:id", (req, res) => {
-  res.status(200).json({ 
-    success: true, 
-    message: `Delete bootcamp ${req.params.id}` 
-  });
-});
 
 /**
  * SERVER STARTUP SECTION
