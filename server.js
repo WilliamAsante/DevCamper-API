@@ -9,6 +9,14 @@ const express = require("express");
 // Dotenv allows us to load environment variables from a .env file
 const dotenv = require("dotenv");
 
+
+
+//Route files
+// This links the bootcamp routes file to the entry app(server.js)
+const bootcamps = require('./routes/bootcamps')
+
+
+
 // STEP 2: LOADING ENVIRONMENT VARIABLES
 // This tells dotenv where to find our environment variables file
 // Environment variables store sensitive data like ports, database URLs, API keys
@@ -18,6 +26,11 @@ dotenv.config({ path: "./config/config.env" });
 // This creates an instance of an Express application
 // Think of 'app' as our web server that can handle HTTP requests
 const app = express();
+
+// Mount routers
+// The first part of the is the url and the variable that contains the bootcamp file location
+// What the app.use does in simple english "For any URL that starts with /api/v1/bootcamps, I want you to forward the request to the bootcamps router to handle it."
+app.use('/api/v1/bootcamps', bootcamps);
 
 /**
  * ROUTING SECTION
