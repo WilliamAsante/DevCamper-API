@@ -85,6 +85,7 @@ app.listen(PORT, () => {
 // git init                - Initialize git repository
 // Create .gitignore       - Specify files/folders to ignore in version control
 
+
 // PLANNED API ROUTE STRUCTURE:
 // /api/v1/bootcamps       - Bootcamp operations
 // /api/v1/courses         - Course operations  
