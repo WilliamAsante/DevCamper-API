@@ -9,13 +9,11 @@ const express = require("express");
 // Dotenv allows us to load environment variables from a .env file
 const dotenv = require("dotenv");
 
-
-
 //Route files
 // This links the bootcamp routes file to the entry app(server.js)
-const bootcamps = require('./routes/bootcamps')
-
-
+const bootcamps = require("./routes/bootcamps");
+// Morgan is an HTTP request logger middleware that logs details of each incoming request (method, URL, status code, response time, etc.) 
+const morgan = require('morgan')
 
 // STEP 2: LOADING ENVIRONMENT VARIABLES
 // This tells dotenv where to find our environment variables file
@@ -27,10 +25,17 @@ dotenv.config({ path: "./config/config.env" });
 // Think of 'app' as our web server that can handle HTTP requests
 const app = express();
 
+// Dev logging middleware
+if(process.env.NODE_ENV === 'development'){
+  app.use(morgan('dev'));
+}
+
+
+
 // Mount routers
 // The first part of the is the url and the variable that contains the bootcamp file location
 // What the app.use does in simple english "For any URL that starts with /api/v1/bootcamps, I want you to forward the request to the bootcamps router to handle it."
-app.use('/api/v1/bootcamps', bootcamps);
+app.use("/api/v1/bootcamps", bootcamps);
 
 /**
  * ROUTING SECTION
@@ -42,17 +47,16 @@ app.use('/api/v1/bootcamps', bootcamps);
 app.get("/", (req, res) => {
   // req = request object (contains info about the incoming request)
   // res = response object (what we send back to the client)
-  
+
   // Different ways to send responses (examples commented out):
   // res.send("<h1>Hello from express</h1>")  // Send HTML
   // res.send({name : "William Asante"})       // Send object
   // res.json({name : 'William Asante'});      // Send JSON
-  
+
   // Send JSON response with HTTP status code
   // 400 = Bad Request status code
   res.status(400).json({ success: false });
 });
-
 
 /**
  * SERVER STARTUP SECTION
@@ -85,10 +89,9 @@ app.listen(PORT, () => {
 // git init                - Initialize git repository
 // Create .gitignore       - Specify files/folders to ignore in version control
 
-
 // PLANNED API ROUTE STRUCTURE:
 // /api/v1/bootcamps       - Bootcamp operations
-// /api/v1/courses         - Course operations  
+// /api/v1/courses         - Course operations
 // /api/v1/reviews         - Review operations
 // /api/v1/auth            - Authentication
 // /api/v1/users           - User management
@@ -96,4 +99,3 @@ app.listen(PORT, () => {
 // WHY /v1 IN ROUTES?
 // Version numbering allows us to make breaking changes in v2
 // while keeping v1 working for existing clients
-
