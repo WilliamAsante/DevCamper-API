@@ -1,101 +1,89 @@
 /**
  * EXPRESS.JS SERVER SETUP FOR DEVCAMP API
- * This file creates a basic Express.js server with CRUD routes for bootcamps
+ * This file sets up an Express.js server, connects to MongoDB,
+ * and defines basic routes for the API.
  */
 
-// STEP 1: IMPORTING REQUIRED MODULES
-// Express is a web framework for Node.js that helps us create web servers easily
-const express = require("express");
-// Dotenv allows us to load environment variables from a .env file
-const dotenv = require("dotenv");
+// STEP 1: IMPORT NEEDED MODULES
+const express = require("express");     
+// Express is the main web framework we’ll use to create our API
 
-//Route files
-// This links the bootcamp routes file to the entry app(server.js)
-const bootcamps = require("./routes/bootcamps");
-// Morgan is an HTTP request logger middleware that logs details of each incoming request (method, URL, status code, response time, etc.) 
-const morgan = require('morgan')
+const dotenv = require("dotenv");       
+// Dotenv allows us to use environment variables (like DB passwords, PORT, etc.)
+// Environment variables help keep sensitive information out of the code
 
-// STEP 2: LOADING ENVIRONMENT VARIABLES
-// This tells dotenv where to find our environment variables file
-// Environment variables store sensitive data like ports, database URLs, API keys
+const morgan = require("morgan");       
+// Morgan is middleware that logs details of incoming requests (method, URL, status, time)
+
+const connectDB = require("./config/db");
+// This is our custom function to connect to MongoDB
+
+// STEP 2: LOAD ENVIRONMENT VARIABLES
 dotenv.config({ path: "./config/config.env" });
+// This looks inside config.env and loads variables into process.env
+// Example: process.env.PORT or process.env.MONGO_URI
 
-// STEP 3: CREATING THE EXPRESS APPLICATION
-// This creates an instance of an Express application
-// Think of 'app' as our web server that can handle HTTP requests
+// Connect to the MongoDB database before starting the server
+connectDB();
+
+// STEP 3: IMPORT ROUTE FILES
+const bootcamps = require("./routes/bootcamps");
+// This will handle all requests for /api/v1/bootcamps
+
+// STEP 4: CREATE EXPRESS APPLICATION
 const app = express();
+// The 'app' object is basically our server. We’ll add routes and middleware to it.
 
-// Dev logging middleware
-if(process.env.NODE_ENV === 'development'){
-  app.use(morgan('dev'));
+// Use Morgan logger only in development mode
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+  // This makes it easy to see requests while testing
 }
 
-
-
-// Mount routers
-// The first part of the is the url and the variable that contains the bootcamp file location
-// What the app.use does in simple english "For any URL that starts with /api/v1/bootcamps, I want you to forward the request to the bootcamps router to handle it."
+// MOUNT ROUTERS
+// Any request starting with /api/v1/bootcamps will be forwarded
+// to the bootcamps router we imported above
 app.use("/api/v1/bootcamps", bootcamps);
 
-/**
- * ROUTING SECTION
- * Routes define what happens when a user visits different URLs
- * Each route has: HTTP method (GET, POST, PUT, DELETE) + URL path + callback function
- */
-
-// ROOT ROUTE - What happens when someone visits the home page "/"
+// STEP 5: DEFINE BASIC ROUTE
 app.get("/", (req, res) => {
-  // req = request object (contains info about the incoming request)
-  // res = response object (what we send back to the client)
+  // req → the request from the client (browser, Postman, etc.)
+  // res → the response we send back to the client
 
-  // Different ways to send responses (examples commented out):
-  // res.send("<h1>Hello from express</h1>")  // Send HTML
-  // res.send({name : "William Asante"})       // Send object
-  // res.json({name : 'William Asante'});      // Send JSON
-
-  // Send JSON response with HTTP status code
-  // 400 = Bad Request status code
+  // Here we’re just sending a simple JSON response with status code 400
   res.status(400).json({ success: false });
 });
 
-/**
- * SERVER STARTUP SECTION
- */
-
-// STEP 4: SETTING THE PORT
-// Try to use PORT from environment variables, fallback to 3000 if not set
-// || means "OR" - if first value is falsy, use the second value
+// STEP 6: START THE SERVER
 const PORT = process.env.PORT || 3000;
+// First tries to use the port in .env, otherwise defaults to 3000
 
-// STEP 5: STARTING THE SERVER
-// This makes our server listen for incoming requests on the specified port
-app.listen(PORT, () => {
-  // This callback function runs when the server successfully starts
+const server = app.listen(PORT, () => {
   console.log(
     `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`
   );
 });
 
+// STEP 7: HANDLE UNHANDLED PROMISE REJECTIONS
+// Example: If MongoDB connection fails, that’s a rejected promise
+// This makes sure the app doesn’t just crash silently
+process.on("unhandledRejection", (err) => {
+  console.log(`Error: ${err.message}`);
+  // Close server and exit process (1 = exit with failure)
+  server.close(() => process.exit(1));
+});
+
 /**
- * PROJECT NOTES AND FUTURE ROUTE STRUCTURE
+ * EXTRA NOTES:
+ *
+ * - Installation commands:
+ *   npm init              → Create package.json
+ *   npm i express dotenv  → Install Express & Dotenv
+ *   npm i -D nodemon      → Dev dependency for auto-restart
+ *
+ * - Planned routes:
+ *   /api/v1/bootcamps, /courses, /reviews, /auth, /users
+ *
+ * - Why /v1 in routes?
+ *   It allows us to release version 2 later without breaking version 1.
  */
-
-// INSTALLATION COMMANDS USED:
-// npm init                 - Create package.json
-// npm i express dotenv     - Install Express and Dotenv
-// npm i -D nodemon        - Install Nodemon as dev dependency
-
-// GIT SETUP:
-// git init                - Initialize git repository
-// Create .gitignore       - Specify files/folders to ignore in version control
-
-// PLANNED API ROUTE STRUCTURE:
-// /api/v1/bootcamps       - Bootcamp operations
-// /api/v1/courses         - Course operations
-// /api/v1/reviews         - Review operations
-// /api/v1/auth            - Authentication
-// /api/v1/users           - User management
-
-// WHY /v1 IN ROUTES?
-// Version numbering allows us to make breaking changes in v2
-// while keeping v1 working for existing clients
